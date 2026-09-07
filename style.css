@@ -10,7 +10,7 @@ html {
 
 body {
     font-family: Arial, Helvetica, sans-serif;
-    background: #07111f;
+    background: #A6CFD5;
     color: #ffffff;
     min-height: 100vh;
 }
@@ -623,4 +623,7 @@ footer {
     .log-entry {
         grid-template-columns: 70px 55px 1fr;
     }
+}
+body {
+    background: #A6CFD5;
 }
