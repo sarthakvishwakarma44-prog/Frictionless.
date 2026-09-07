@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Earth Rescue Mission</title>
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div id="app">
+
+        <header class="topbar">
+
+            <div class="brand">
+                <div class="brand-icon">🌍</div>
+
+                <div>
+                    <h1>EARTH RESCUE MISSION</h1>
+                    <p>Satellite Environmental Monitoring System</p>
+                </div>
+            </div>
+
+            <div class="system-info">
+
+                <div class="status">
+                    <span id="systemStatusIndicator"></span>
+                    <span id="systemStatus">CONNECTING</span>
+                </div>
+
+                <div class="mission-time">
+                    MISSION TIME
+                    <strong id="missionClock">00:00:00</strong>
+                </div>
+
+                <button id="settingsButton">⚙</button>
+
+            </div>
+
+        </header>
+
+
+        <main>
+
+            <section class="dashboard">
+
+                <div class="card">
+                    <span>EVENTS DETECTED</span>
+                    <strong id="eventsDetected">0</strong>
+                </div>
+
+                <div class="card">
+                    <span>HIGH PRIORITY</span>
+                    <strong id="highPriorityEvents">0</strong>
+                </div>
+
+                <div class="card">
+                    <span>DATA POINTS</span>
+                    <strong id="dataPoints">0</strong>
+                </div>
+
+                <div class="card">
+                    <span>SYSTEM UPTIME</span>
+                    <strong id="systemUptime">0s</strong>
+                </div>
+
+            </section>
+
+
+            <section class="satellites">
+
+                <h2>Satellite Sources</h2>
+
+                <div class="satellite-list">
+
+                    <button
+                        class="satellite-card active"
+                        data-satellite="NOAA-21"
+                    >
+                        <strong>NOAA-21</strong>
+                        <span>VIIRS</span>
+                    </button>
+
+                    <button
+                        class="satellite-card"
+                        data-satellite="NOAA-20"
+                    >
+                        <strong>NOAA-20</strong>
+                        <span>VIIRS</span>
+                    </button>
+
+                    <button
+                        class="satellite-card"
+                        data-satellite="SNPP"
+                    >
+                        <strong>SUOMI NPP</strong>
+                        <span>VIIRS</span>
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <section class="main-grid">
+
+                <div class="map-panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h2>Earth Observation Map</h2>
+                            <p>NASA FIRMS fire detection data</p>
+                        </div>
+
+                        <span id="satelliteLiveBadge">
+                            NASA DATA
+                        </span>
+
+                    </div>
+
+                    <div id="earthMap">
+
+                        <div id="mapLoading">
+                            Loading Earth observation data...
+                        </div>
+
+                    </div>
+
+                    <div class="map-controls">
+
+                        <button id="locateButton">
+                            📍 Locate
+                        </button>
+
+                        <button id="refreshMapButton">
+                            🔄 Refresh
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="analysis-panel">
+
+                    <div class="panel-header">
+                        <h2>Mission Analysis</h2>
+                    </div>
+
+                    <div class="analysis-status">
+
+                        <span>STATUS</span>
+
+                        <strong id="analysisStatus">
+                            INITIALIZING
+                        </strong>
+
+                        <p id="analysisMessage">
+                            Waiting for satellite observations...
+                        </p>
+
+                    </div>
+
+
+                    <div class="priority-box">
+
+                        <span>CURRENT PRIORITY</span>
+
+                        <strong id="currentPriority">
+                            NORMAL
+                        </strong>
+
+                    </div>
+
+
+                    <div class="telemetry">
+
+                        <h3>Environmental Telemetry</h3>
+
+                        <div class="telemetry-grid">
+
+                            <div>
+                                <span>Temperature</span>
+                                <strong id="temperatureValue">--</strong>
+                            </div>
+
+                            <div>
+                                <span>Rainfall</span>
+                                <strong id="rainfallValue">--</strong>
+                            </div>
+
+                            <div>
+                                <span>Wind</span>
+                                <strong id="windValue">--</strong>
+                            </div>
+
+                            <div>
+                                <span>Air Quality</span>
+                                <strong id="airQualityValue">--</strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <section class="observations-panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h2>Satellite Observations</h2>
+                        <p>Latest detected environmental events</p>
+                    </div>
+
+                </div>
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Region</th>
+                                <th>Latitude</th>
+                                <th>Longitude</th>
+                                <th>Confidence</th>
+                                <th>Satellite</th>
+                                <th>Priority</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="observationTableBody"></tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <section class="alerts-panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h2>Mission Alerts</h2>
+                        <p>Environmental emergency notifications</p>
+                    </div>
+
+                </div>
+
+                <div id="alertsContainer"></div>
+
+            </section>
+
+
+            <section class="event-panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h2>Mission Event Log</h2>
+                        <p>System activity</p>
+                    </div>
+
+                    <button id="clearLogButton">
+                        Clear Log
+                    </button>
+
+                </div>
+
+                <div id="eventLog"></div>
+
+            </section>
+
+
+            <section class="mission-controls">
+
+                <button
+                    id="autoModeButton"
+                    class="mode-button active"
+                >
+                    AUTO MODE
+                </button>
+
+                <button
+                    id="manualModeButton"
+                    class="mode-button"
+                >
+                    MANUAL MODE
+                </button>
+
+                <div class="connection">
+
+                    <span id="connectionDot"></span>
+
+                    <span id="connectionText">
+                        CONNECTING
+                    </span>
+
+                    <span>
+                        Last update:
+                    </span>
+
+                    <strong id="lastUpdate">
+                        --
+                    </strong>
+
+                </div>
+
+            </section>
+
+        </main>
+
+
+        <footer>
+
+            <p>
+                EARTH RESCUE MISSION
+                •
+                NASA Earth Observation System
+            </p>
+
+        </footer>
+
+    </div>
+
+
+    <div
+        id="settingsModal"
+        class="modal"
+    >
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2>Mission Settings</h2>
+
+                <button id="closeSettingsButton">
+                    ×
+                </button>
+
+            </div>
+
+
+            <label>
+                Refresh interval (seconds)
+
+                <input
+                    type="number"
+                    id="refreshInterval"
+                    value="300"
+                    min="30"
+                >
+
+            </label>
+
+
+            <label>
+                <input
+                    type="checkbox"
+                    id="soundAlerts"
+                >
+
+                Sound alerts
+            </label>
+
+
+            <label>
+                <input
+                    type="checkbox"
+                    id="autoAnalysis"
+                    checked
+                >
+
+                Automatic analysis
+            </label>
+
+
+            <div class="modal-buttons">
+
+                <button id="cancelSettingsButton">
+                    Cancel
+                </button>
+
+                <button id="saveSettingsButton">
+                    Save
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="alertModal"
+        class="modal"
+    >
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2>⚠️ Mission Alert</h2>
+
+                <button id="closeAlertButton">
+                    ×
+                </button>
+
+            </div>
+
+            <div id="alertDetailContent"></div>
+
+            <button id="acknowledgeAlertButton">
+                Acknowledge
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    ></script>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
