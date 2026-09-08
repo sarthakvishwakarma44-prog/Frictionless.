@@ -15,6 +15,9 @@
   <li>
     This may help people stay near flood area and volcanic area and others places. 
   </li>
+  <li>
+    Secure person from disaster. 
+  </li>
 </ul>
 </h2>
 <hr>
